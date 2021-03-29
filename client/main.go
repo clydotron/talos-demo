@@ -7,54 +7,14 @@
 package main
 
 import (
-	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/clydotron/talos-demo/client/grpc_client"
-	"github.com/clydotron/talos-demo/client/models"
+	"github.com/clydotron/talos-demo/client/api"
 	"github.com/maxence-charriere/go-app/v7/pkg/app"
-	//"github.com/wcharczuk/go-chart" //exposes "chart"
 )
-
-func lager(format string, v ...interface{}) {
-	fmt.Println(format, v)
-
-}
-
-type ClientX struct {
-	cc *grpc_client.ClusterClient
-	ct *models.ClusterTracker
-}
-
-func setupResponse(w *http.ResponseWriter, req *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-}
-
-// apiCluster -- this is called on its own go routine, so we can block
-func (cx *ClientX) apiCluster(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("api request: cluster")
-
-	setupResponse(&w, r)
-	if (*r).Method == "OPTIONS" {
-		return
-	}
-
-	if (*r).Method != "GET" {
-		fmt.Println("Incorrect method:", (*r).Method)
-		return
-	}
-	//make sure this is a get
-	//get the latest cluster info from the store and json it...
-
-	cx.ct.UpdateStatus()
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(cx.ct.CI)
-}
 
 // The main function is the entry of the server. It is where the HTTP handler
 // that serves the UI is defined and where the server is started.
@@ -64,27 +24,16 @@ func (cx *ClientX) apiCluster(w http.ResponseWriter, r *http.Request) {
 // app.go.
 func main() {
 
-	// could move all of this into init
-	client := grpc_client.NewClusterClient()
-	err := client.Connect("localhost:50051")
-	if err != nil {
-		log.Fatalln("### Client failed to connect:", err)
-	}
-	defer client.Close()
+	serverAddr := flag.String("grpc", "localhost:50051", "gRPC server address")
+	port := flag.String("port", ":8000", "Port to listen on (default 8000)")
 
-	clusterTracker := models.NewClusterTracker(client)
-	clusterTracker.InitWithFakeData()
-	clusterTracker.Start()
-	defer clusterTracker.Stop()
+	flag.Parse()
 
-	cx := &ClientX{
-		cc: client,
-		ct: clusterTracker,
-	}
-	// sequence of events:
-	// create client (gRPC connection to server)
-	// create the cluster tracker - responsible for making the HealthCheck gRPC call and [optionally] maintaining a snaphot of the cluster (so can diff)
-	// ClientX(Api) - implements the http.HandleFunc call to respond to api requests
+	// ClusterAPI is responsible for establishing a gRPC connect to get cluster information
+	// also implements a handleFunc to return this info as JSON to the caller (from inside wasm-land)
+	cx := &api.ClusterAPI{}
+	cx.Init(*serverAddr)
+	defer cx.Close()
 
 	// app.Handler is a standard HTTP handler that serves the UI and its
 	// resources to make it work in a web browser.
@@ -95,15 +44,16 @@ func main() {
 		Name:        "Hello",
 		Description: "Experimental",
 		Styles: []string{
-			"/web/tailwind.css", "/web/test.css", // Include .css file.
+			"/web/tailwind.css", "/web/test.css",
 		},
 	})
 
-	http.HandleFunc("/api/v1/cluster", cx.apiCluster)
+	// handle any API reqests (since wasm doesnt support gRPC)
+	http.HandleFunc("/api/v1/cluster", cx.HandleClusterReq)
 
 	fmt.Println("up and running...")
 
-	err = http.ListenAndServe(":8000", nil)
+	err := http.ListenAndServe(*port, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

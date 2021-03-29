@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"time"
 
 	"github.com/clydotron/talos-demo/api/cluster"
 	"github.com/clydotron/talos-demo/client/grpc_client"
@@ -13,13 +12,11 @@ import (
 
 // periodically ping the grpc server for cluster information:
 // notify any subscribers over the event bus of any changes
-
+// >work in progress< currently makes a single call to HealthCheck
+// should broadcast over the event bus
 type ClusterTracker struct {
-	//eb     *utils.EventBus
-	cc     *grpc_client.ClusterClient
-	ticker *time.Ticker
-	doneCh chan bool
-	CI     *ClusterInfo
+	cc *grpc_client.ClusterClient
+	CI *ClusterInfo
 }
 
 // NewClusterTracker ...
@@ -44,17 +41,12 @@ func (ct *ClusterTracker) InitWithFakeData() {
 
 // Start ...
 func (ct *ClusterTracker) Start() {
-
-	//fmt.Println("ClusterTracker - Start")
 	ct.UpdateStatus()
 }
 
 // Stop ...
 func (ct *ClusterTracker) Stop() {
-	fmt.Println("ClusterTracker - Stop")
-
-	ct.ticker.Stop()
-	ct.doneCh <- true
+	// @todo either add something here, or remove this
 }
 
 // UpdateStatus ...
@@ -72,8 +64,6 @@ func (ct *ClusterTracker) UpdateStatus() {
 		nodes = append(nodes, k)
 	}
 
-	//@todo why dont i just make a copy? (or pass the cluter info?)
-
 	req := &cluster.HealthCheckRequest{
 		ClusterInfo: &cluster.ClusterInfo{
 			ControlPlaneNodes: planes,
@@ -84,7 +74,6 @@ func (ct *ClusterTracker) UpdateStatus() {
 
 	stream, err := ct.cc.CSC.HealthCheck(context.Background(), req)
 	if err != nil {
-		//og.Fatalln("HealthCheck RPC error:", err)
 		fmt.Println("#### HealthCheck RPC error:", err)
 		ct.Stop()
 		return
@@ -105,7 +94,6 @@ func (ct *ClusterTracker) UpdateStatus() {
 		// handle the actual result:
 		d := msg.GetMetadata()
 		x := msg.GetMessage()
-		//fmt.Println("msg: meta", d, "msg:", x)
 
 		// check to see if this is a control plane... if so, update
 		if cp, ok := ct.CI.ControlPlanes[d.Hostname]; ok {
@@ -116,7 +104,5 @@ func (ct *ClusterTracker) UpdateStatus() {
 			wn.Status = x
 			ct.CI.WorkerNodes[d.Hostname] = wn
 		}
-		//@todo store this locally... check if values have changed, set a flag
 	}
-
 }

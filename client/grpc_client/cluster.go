@@ -24,7 +24,7 @@ func NewClusterClient() *ClusterClient {
 
 func (cc *ClusterClient) Connect(server string) error {
 
-	fmt.Println("ClusterClient Connecting...")
+	fmt.Println("ClusterClient Connecting to:", server)
 	conn, err := grpc.Dial(server, grpc.WithInsecure())
 	if err != nil {
 		fmt.Println("Failed to dial:", err) //pick one or the other (log fatal or return err)
@@ -35,7 +35,7 @@ func (cc *ClusterClient) Connect(server string) error {
 	cc.cconn = conn
 	cc.CSC = cluster.NewClusterServiceClient(conn)
 
-	fmt.Println(">>> ClusterClient Connected >>>")
+	//fmt.Println(">>> ClusterClient Connected >>>")
 	//doHealthCheck(cc.CSC)
 
 	return nil
@@ -47,7 +47,7 @@ func (cc *ClusterClient) Close() {
 
 func doHealthCheck(csc cluster.ClusterServiceClient) {
 
-	fmt.Println("testing connection...")
+	fmt.Println("testing connection:")
 
 	controlPlanes := []string{"control plane 1", "control plane 2"}
 	workerNodes := []string{"node 1", "node 2", "node 3", "node 4", "node 5"}
@@ -62,7 +62,7 @@ func doHealthCheck(csc cluster.ClusterServiceClient) {
 
 	stream, err := csc.HealthCheck(context.Background(), req)
 	if err != nil {
-		fmt.Println("### HealthCheck RPC error:", err)
+		fmt.Println("### HealthCheck RPC error:", err, "###")
 		return
 	}
 	for {
