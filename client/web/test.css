@@ -1,0 +1,11 @@
+
+.cluster {
+  display: grid;
+  grid-template-columns: 8rem auto;
+  background-color: blueviolet;
+}
+#main {
+  display: grid;
+  grid-template-columns: 8rem auto;
+  background-color: #c0ffee;
+}
