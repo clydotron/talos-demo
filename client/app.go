@@ -64,12 +64,11 @@ func main() {
 		MI: mi,
 	}
 
-	app.Route("/", &ui.Updater{}) // hello component is associated with URL path "/".
+	app.Route("/", &ui.UpdateButton{})
 	app.Route("/clusters", views.NewClustersView(eventBus))
 	app.Route("/machines", DS.MV)
 	app.Route("/events", views.NewEventsView(eventBus))
 	app.Route("/charts", views.NewProcessesView(eventBus))
-	app.RouteWithRegexp("^/node.*", &ui.Node{})
 	app.RouteWithRegexp("^/task.*", ui.NewTaskDetail(taskRepo))
 
 	app.Run() // Launches the PWA.

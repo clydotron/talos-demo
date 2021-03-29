@@ -34,7 +34,7 @@ func (c *Machine) addTask() {
 	app.Dispatch(func() { // Ensures response field is updated on UI goroutine.
 
 		t := &models.TaskInfo{
-			Name:  "postgre",
+			Name:  "postgres",
 			State: "error",
 		}
 		c.MI.Tasks = append(c.MI.Tasks, *t)
@@ -44,7 +44,7 @@ func (c *Machine) addTask() {
 
 func (c *Machine) removeTask() {
 	app.Dispatch(func() { // Ensures response field is updated on UI goroutine.
-		fmt.Println("remove task")
+		//fmt.Println("remove task")
 
 		if len(c.MI.Tasks) > 0 {
 			c.MI.Tasks = c.MI.Tasks[:len(c.MI.Tasks)-1]
@@ -70,7 +70,7 @@ func (c *Machine) OnMount(ctx app.Context) {
 			c.addTask()
 		}()
 
-		timer4 := time.NewTimer(6 * time.Second)
+		timer4 := time.NewTimer(8 * time.Second)
 		go func() {
 			<-timer4.C
 			c.removeTask()

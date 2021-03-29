@@ -96,9 +96,13 @@ func (c *Clusters) renderDetailView() app.UI {
 	}
 
 	// if planes, no grid?
+	gstyle := "grid grid-cols-3"
+	if c.view == "planes" {
+		gstyle = "grid grid-cols-2"
+	}
 
 	// make the number of columns
-	return app.Div().Class("bg-gray-100 w-full h-full p-4 grid grid-cols-3 gap-2").
+	return app.Div().Class("bg-gray-100 w-full h-full p-4 gap-2 " + gstyle).
 		Body(
 			app.Ul().
 				Body(

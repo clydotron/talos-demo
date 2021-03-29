@@ -85,11 +85,11 @@ func (c *Events) Render() app.UI {
 	return app.Div().Class("h-screen w-screen").
 		Body(
 			&ui.NavBar{},
-			app.Div().Class("pt-20 bg-purple-100 flex flex-col px-2").
+			app.Div().Class("pt-20 flex flex-col px-2").
 				Body(
 					app.Table().
 						Body(
-							app.Button().Class("rounded bg-indigo-200 p-1").Text("Clear").OnClick(c.clearEvents),
+							app.Button().Class("rounded bg-indigo-200 p-1 mb-2").Text("Clear").OnClick(c.clearEvents),
 							app.Tr().Class("bg-gray-200").Body(
 								//bg color, change alignment
 								app.Th().Class("text-left").Text("Date"),

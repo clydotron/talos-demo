@@ -20,7 +20,7 @@ func (c *ControlPlane) Render() app.UI {
 				app.H3().Class("mb-2 text-gray-700").Text(c.CPI.Name),
 				app.P().Class("text-grey-600 text-sm").Text(c.CPI.Status),
 			),
-			app.Div().Class("mt-4").Body(
+			app.Div().Class("mt-4 flex justify-end").Body(
 				app.A().Class("no-underline mr-4 text-blue-500 hover:text-blue-400").Href("#").Text("details"),
 			),
 		)

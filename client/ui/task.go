@@ -30,7 +30,7 @@ func (c *Task) Render() app.UI {
 	//app.Log("render")
 
 	return app.Div().
-		Class("bg-green-100 p-4 width-full flex flex-col items-center border border-green-700 hover:bg-green-200").
+		Class("bg-indigo-100 p-4 width-full flex flex-col items-center border border-indigo-700 hover:bg-indigo-200").
 		Body(
 			app.A().Href(`/task/1`).
 				Body(

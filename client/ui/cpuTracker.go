@@ -118,8 +118,7 @@ func (c *CpuTracker) updateChart() {
 }
 
 func (c *CpuTracker) OnMount(ctx app.Context) {
-
-	fmt.Println("CpuTracker.OnMount: ")
+	//fmt.Println("CpuTracker.OnMount: ")
 
 	req := &models.ProcessInfoCpuHistoryRequest{
 		ID:  c.id,
@@ -138,8 +137,7 @@ func (c *CpuTracker) OnMount(ctx app.Context) {
 
 // OnDismount ...
 func (c *CpuTracker) OnDismount() {
-	defer fmt.Println("CpuTracker dismounted")
-
+	//defer fmt.Println("CpuTracker dismounted")
 	c.sub.Stop()
 }
 
