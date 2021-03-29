@@ -1,4 +1,4 @@
-./client/talos-demo
-./client/web/app.wasm
+/client/talos-demo
+*.wasm
 
 
