@@ -43,7 +43,7 @@ func (c *TaskDetail) GetID() string {
 // OnNav ...
 func (c *TaskDetail) OnNav(ctx app.Context, url *url.URL) {
 
-	fmt.Println("url:", url, "coming from:", app.Window().Get("document").Get("referrer").String())
+	//fmt.Println("url:", url, "coming from:", app.Window().Get("document").Get("referrer").String())
 
 	history := app.Window().Get("document").Get("history")
 	fmt.Println("history:", history)

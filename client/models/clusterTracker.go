@@ -13,7 +13,8 @@ import (
 // periodically ping the grpc server for cluster information:
 // notify any subscribers over the event bus of any changes
 // >work in progress< currently makes a single call to HealthCheck
-// should broadcast over the event bus
+// needs timer/etc to drive events, broadcast over the event bus
+
 type ClusterTracker struct {
 	cc *grpc_client.ClusterClient
 	CI *ClusterInfo

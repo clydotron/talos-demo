@@ -17,7 +17,7 @@ func TestPiSouceAddProcess(t *testing.T) {
 	pi := models.ProcessInfo{ID: "p1", Name: "p1"}
 	piSource.AddProcess(pi)
 
-	// and?
+	// and??? validate something
 }
 
 func TestPiSouceSendUpdate(t *testing.T) {

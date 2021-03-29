@@ -10,6 +10,7 @@ import (
 	"github.com/clydotron/talos-demo/client/utils"
 )
 
+// ProcessInfoSource - generate random CPU usage for n processes once per second
 type ProcessInfoEx struct {
 	id         string
 	name       string
@@ -35,14 +36,13 @@ func NewProcessInfoSource(eb *utils.EventBus) *ProcessInfoSource {
 		processes: map[string]*ProcessInfoEx{},
 		sub:       utils.NewEventBusSubscriber("pi_req", eb),
 	}
-	//hook some additional things up?
 	return ps
 }
 
 // Start ...
 func (ps *ProcessInfoSource) Start() {
-	//start sending events every second
 
+	// start sending events every second
 	rand.Seed(time.Now().UnixNano())
 	ps.ticker = time.NewTicker(time.Second)
 	ps.doneCh = make(chan bool)
@@ -61,7 +61,7 @@ func (ps *ProcessInfoSource) Start() {
 	ps.sub.Start(ps.handleEvent)
 }
 
-//
+// handleEvent - respond to outside requests to get historical data
 func (ps *ProcessInfoSource) handleEvent(d utils.DataEvent) {
 	if d.Topic == "pi_req" {
 		if req, ok := d.Data.(*ProcessInfoCpuHistoryRequest); ok {
@@ -72,6 +72,7 @@ func (ps *ProcessInfoSource) handleEvent(d utils.DataEvent) {
 	}
 }
 
+// GetProcessHistory - get the last n entries for the specified process
 func (ps *ProcessInfoSource) GetProcessHistory(id string, num int) []float64 {
 	if p, ok := ps.processes[id]; ok {
 
@@ -148,6 +149,6 @@ func (ps *ProcessInfoSource) SendUpdate() {
 			CPU:  c,
 		}
 
-		ps.eb.Publish("PI", x)
+		ps.eb.Publish("PI", x) //use a constant
 	}
 }

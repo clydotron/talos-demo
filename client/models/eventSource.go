@@ -7,6 +7,10 @@ import (
 	"github.com/clydotron/talos-demo/client/utils"
 )
 
+// Event Source - generate an event every second and publish the update to the EventBus.
+// Keep a history of all the events, provide mechanism (via EventBus) for others to request this data.
+// @todo add a prune method to keep history size under control
+
 type EventSource struct {
 	Events []EventInfo
 
@@ -24,7 +28,6 @@ func NewEventSource(eb *utils.EventBus) *EventSource {
 		eb:  eb,
 		sub: utils.NewEventBusSubscriber("event_req", eb),
 	}
-	//hook some additional things up?
 	return es
 }
 
@@ -32,7 +35,6 @@ func NewEventSource(eb *utils.EventBus) *EventSource {
 func (es *EventSource) handleEvent(d utils.DataEvent) {
 
 	if d.Topic == "event_req" {
-		//figure out what events to send
 		if req, ok := d.Data.(*EventInfoRequest); ok {
 			req.Callback(es.GetEventsAfter(req.StartTime))
 		} else {
