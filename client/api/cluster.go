@@ -23,8 +23,6 @@ type ClusterAPI struct {
 //"localhost:50051"
 func (c *ClusterAPI) Init(addr string) {
 
-	fmt.Println("Init...")
-
 	client := grpc_client.NewClusterClient()
 	err := client.Connect(addr)
 	if err != nil {

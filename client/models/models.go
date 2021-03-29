@@ -35,6 +35,7 @@ func (ti *TaskInfo) RemoveObserver(o Observer) {
 	for i, oo := range ti.observers {
 		if o.GetID() == oo.GetID() {
 			ti.observers = append(ti.observers[:i], ti.observers[i+1:]...)
+			return
 		}
 	}
 }
@@ -50,15 +51,19 @@ func (ti *TaskInfo) NotifyAll() {
 	}
 }
 
-//@todo how to do an enum in
-
 // MachineInfo ...
 type MachineInfo struct {
+	ID     string
 	Name   string
 	Role   string
 	Status string
 	Memory int32
 	Tasks  []TaskInfo
+}
+
+type MachineInfoRequest struct {
+	ID       string
+	Callback func(mi []MachineInfo)
 }
 
 // Events ...

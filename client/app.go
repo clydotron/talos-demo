@@ -7,24 +7,12 @@
 package main
 
 import (
-	"time"
-
 	"github.com/clydotron/talos-demo/client/models"
 	"github.com/clydotron/talos-demo/client/ui"
 	"github.com/clydotron/talos-demo/client/utils"
 	"github.com/clydotron/talos-demo/client/views"
 	"github.com/maxence-charriere/go-app/v7/pkg/app"
 )
-
-type DataStore struct {
-	MI []models.MachineInfo
-	MV *views.Machines
-}
-
-func (d *DataStore) update(mi []models.MachineInfo) {
-	d.MI = mi
-	d.MV.UpdateM(&mi)
-}
 
 // The main function is the entry point of the UI. It is where components are
 // associated with URL paths and where the UI is started.
@@ -33,40 +21,25 @@ func main() {
 	eventBus := utils.NewEventBus()
 	eventSource := models.NewEventSource(eventBus)
 	eventSource.Start()
+	defer eventSource.Stop()
 
 	piSource := models.NewProcessInfoSource(eventBus)
 	piSource.AddProcess(models.ProcessInfo{ID: "P1", Name: "P1", CPU: 10})
 	piSource.AddProcess(models.ProcessInfo{ID: "P2", Name: "P2", CPU: 10})
 	piSource.AddProcess(models.ProcessInfo{ID: "P3", Name: "P3", CPU: 30})
 	piSource.Start()
+	defer piSource.Stop()
 
 	taskRepo := models.NewTaskInfoRepo()
 
-	mi := []models.MachineInfo{
-		models.MachineInfo{
-			Name:   "Machine 1",
-			Role:   "Manager",
-			Status: "running",
-			Tasks: []models.TaskInfo{
-				models.TaskInfo{
-					Name:        "Redis",
-					Tag:         "3.2.1",
-					ContainerID: "badc0ffee",
-					State:       "running",
-					Updated:     time.Now(),
-				},
-			},
-		},
-	}
-
-	DS := &DataStore{
-		MV: &views.Machines{MI: mi},
-		MI: mi,
-	}
+	miSource := models.NewMachineInfoSource(eventBus)
+	miSource.InitWithFakeData()
+	miSource.Start()
+	defer miSource.Stop()
 
 	app.Route("/", &ui.UpdateButton{})
 	app.Route("/clusters", views.NewClustersView(eventBus))
-	app.Route("/machines", DS.MV)
+	app.Route("/machines", views.NewMachinesView(eventBus))
 	app.Route("/events", views.NewEventsView(eventBus))
 	app.Route("/charts", views.NewProcessesView(eventBus))
 	app.RouteWithRegexp("^/task.*", ui.NewTaskDetail(taskRepo))
