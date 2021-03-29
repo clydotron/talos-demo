@@ -41,13 +41,10 @@ func NewProcessInfoSource(eb *utils.EventBus) *ProcessInfoSource {
 
 // Start ...
 func (ps *ProcessInfoSource) Start() {
-	//start sending events
+	//start sending events every second
 
 	rand.Seed(time.Now().UnixNano())
-	//fmt.Println("ProcessInfoSource >> start")
-
-	// start a ticker:
-	ps.ticker = time.NewTicker(1000 * time.Millisecond)
+	ps.ticker = time.NewTicker(time.Second)
 	ps.doneCh = make(chan bool)
 
 	go func() {
@@ -74,6 +71,7 @@ func (ps *ProcessInfoSource) handleEvent(d utils.DataEvent) {
 		}
 	}
 }
+
 func (ps *ProcessInfoSource) GetProcessHistory(id string, num int) []float64 {
 	if p, ok := ps.processes[id]; ok {
 
@@ -93,7 +91,6 @@ func (ps *ProcessInfoSource) AddProcess(pi ProcessInfo) {
 	ps.m.Lock()
 	defer ps.m.Unlock()
 
-	fmt.Println("AddProcess:", pi)
 	// check to see if the process is already in the map
 	// (we dont really care that much for this example)
 	if _, exists := ps.processes[pi.ID]; exists {
@@ -134,12 +131,11 @@ func (ps *ProcessInfoSource) SendUpdate() {
 	defer ps.m.Unlock()
 
 	// for each process in the list, use a random number to determine if cpu usage went up/down/unchangged
+	// +/- 5
 	for k, v := range ps.processes {
-		//delta := 0.0
 		r := (10.0 * rand.Float64()) - 5.0
 
 		c := math.Min(100.0, math.Max(0.0, v.cpu+(r*2.0)))
-		//fmt.Println("value:", r, c)
 		v.cpu = c
 		v.cpuHistory = append(v.cpuHistory, c)
 

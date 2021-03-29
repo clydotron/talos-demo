@@ -13,7 +13,7 @@ type NavBar struct {
 
 // Render ...
 func (c *NavBar) Render() app.UI {
-	return app.Nav().Class("bg-purple-200 fixed w-screen").
+	return app.Nav().Class("bg-indigo-200 fixed w-screen").
 		Body(
 			app.Div().Class("px-6 mx-auto flex justify-between").
 				Body(

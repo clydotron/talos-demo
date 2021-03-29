@@ -14,9 +14,14 @@ type ControlPlane struct {
 
 // Render ...
 func (c *ControlPlane) Render() app.UI {
-	return app.Div().
-		Class("bg-purple-400").
+	return app.Div().Class("bg-white shadow p-3 mt-2 rounded").
 		Body(
-			app.Text("ControlPlane"),
+			app.Div().Class("text-left").Body(
+				app.H3().Class("mb-2 text-gray-700").Text(c.CPI.Name),
+				app.P().Class("text-grey-600 text-sm").Text(c.CPI.Status),
+			),
+			app.Div().Class("mt-4").Body(
+				app.A().Class("no-underline mr-4 text-blue-500 hover:text-blue-400").Href("#").Text("details"),
+			),
 		)
 }

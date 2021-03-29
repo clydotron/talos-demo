@@ -37,9 +37,8 @@ func (c *Processes) handleEvent(d utils.DataEvent) {
 		if pi, ok := d.Data.(*models.ProcessInfo); ok {
 
 			if _, exists := c.pui[pi.ID]; !exists {
-				fmt.Println("Processes.handleEvent: add:", pi)
+				//fmt.Println("Processes.handleEvent: add:", pi)
 				c.pui[pi.ID] = *ui.NewCpuTracker(pi.ID, c.eb)
-				//update the fill color?
 				c.Update()
 			}
 		}

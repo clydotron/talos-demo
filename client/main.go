@@ -12,8 +12,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/clydotron/talos-demo/client/grpc_client"
 	"github.com/clydotron/talos-demo/client/models"
-	"github.com/clydotron/talos-demo/grpc_client/client"
 	"github.com/maxence-charriere/go-app/v7/pkg/app"
 	//"github.com/wcharczuk/go-chart" //exposes "chart"
 )
@@ -24,7 +24,7 @@ func lager(format string, v ...interface{}) {
 }
 
 type ClientX struct {
-	cc *client.ClusterClient
+	cc *grpc_client.ClusterClient
 	ct *models.ClusterTracker
 }
 
@@ -65,7 +65,7 @@ func (cx *ClientX) apiCluster(w http.ResponseWriter, r *http.Request) {
 func main() {
 
 	// could move all of this into init
-	client := client.NewClusterClient()
+	client := grpc_client.NewClusterClient()
 	err := client.Connect("localhost:50051")
 	if err != nil {
 		log.Fatalln("### Client failed to connect:", err)

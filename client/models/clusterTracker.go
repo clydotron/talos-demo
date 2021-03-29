@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/clydotron/talos-demo/api/cluster"
-	"github.com/clydotron/talos-demo/grpc_client/client"
+	"github.com/clydotron/talos-demo/client/grpc_client"
 )
 
 // periodically ping the grpc server for cluster information:
@@ -16,14 +16,14 @@ import (
 
 type ClusterTracker struct {
 	//eb     *utils.EventBus
-	cc     *client.ClusterClient
+	cc     *grpc_client.ClusterClient
 	ticker *time.Ticker
 	doneCh chan bool
 	CI     *ClusterInfo
 }
 
 // NewClusterTracker ...
-func NewClusterTracker(cc *client.ClusterClient) *ClusterTracker {
+func NewClusterTracker(cc *grpc_client.ClusterClient) *ClusterTracker {
 	ct := &ClusterTracker{
 		//eb: eb,
 		cc: cc,
@@ -37,30 +37,16 @@ func NewClusterTracker(cc *client.ClusterClient) *ClusterTracker {
 
 // InitWithFakeData ...
 func (ct *ClusterTracker) InitWithFakeData() {
-	ct.CI.ControlPlanes["Control 1"] = ControlPlaneInfo{Name: "Control 1", Status: "Stopped"}
-	ct.CI.WorkerNodes["Node 1"] = WorkerNodeInfo{Name: "Node 1", Status: "Stopped"}
-	ct.CI.WorkerNodes["Node 2"] = WorkerNodeInfo{Name: "Node 2", Status: "Stopped"}
+	ct.CI.ControlPlanes["Control 1"] = ControlPlaneInfo{Name: "Control Plane 1", Status: "Stopped"}
+	ct.CI.WorkerNodes["Node 1"] = WorkerNodeInfo{Name: "Worker Node 1", Status: "Stopped"}
+	ct.CI.WorkerNodes["Node 2"] = WorkerNodeInfo{Name: "Worker Node 2", Status: "Stopped"}
 }
 
 // Start ...
 func (ct *ClusterTracker) Start() {
 
-	fmt.Println("ClusterTracker - Start")
-
+	//fmt.Println("ClusterTracker - Start")
 	ct.UpdateStatus()
-
-	// ct.ticker = time.NewTicker(2000 * time.Millisecond)
-	// ct.doneCh = make(chan bool)
-	// go func() {
-	// 	for {
-	// 		select {
-	// 		case <-ct.doneCh:
-	// 			return
-	// 		case <-ct.ticker.C:
-	// 			ct.UpdateStatus()
-	// 		}
-	// 	}
-	// }()
 }
 
 // Stop ...

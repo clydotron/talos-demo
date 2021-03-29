@@ -29,14 +29,6 @@ func (d *DataStore) update(mi []models.MachineInfo) {
 // The main function is the entry point of the UI. It is where components are
 // associated with URL paths and where the UI is started.
 func main() {
-	//app.Log("setting up routes")
-
-	// client := client.NewClusterClient()
-	// err := client.Connect("0.0.0.0:50051")
-	// if err != nil {
-	// 	log.Fatalln("### Client failed to connect:", err)
-	// }
-	// defer client.Close()
 
 	eventBus := utils.NewEventBus()
 	eventSource := models.NewEventSource(eventBus)
@@ -72,8 +64,6 @@ func main() {
 		MI: mi,
 	}
 
-	//setup the timer:
-
 	app.Route("/", &ui.Updater{}) // hello component is associated with URL path "/".
 	app.Route("/clusters", views.NewClustersView(eventBus))
 	app.Route("/machines", DS.MV)
@@ -82,30 +72,5 @@ func main() {
 	app.RouteWithRegexp("^/node.*", &ui.Node{})
 	app.RouteWithRegexp("^/task.*", ui.NewTaskDetail(taskRepo))
 
-	// app.Route("/machine", &views.Machines{MI: []models.MachineInfo{
-	// 	models.MachineInfo{
-	// 		Name: "Machine 1",
-	// 		Role: "Manager",
-	// 		Tasks: []models.TaskInfo{
-	// 			models.TaskInfo{
-	// 				Name:        "Redis",
-	// 				Tag:         "3.2.1",
-	// 				ContainerID: "bunch of hex",
-	// 				State:       "running",
-	// 				Updated:     time.Now(),
-	// 			},
-	// 			models.TaskInfo{
-	// 				Name:        "Mongo",
-	// 				Tag:         "4.2.1",
-	// 				ContainerID: "bunch of hex",
-	// 				State:       "stopped",
-	// 				Updated:     time.Now(),
-	// 			},
-	// 		},
-	// 	},
-	// }})
 	app.Run() // Launches the PWA.
 }
-
-// return app.Div().OnClick(c.onClick)
-// }
