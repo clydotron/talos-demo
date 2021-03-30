@@ -20,7 +20,7 @@ Content is currently static.
 Early experiment with css and dynamic content. Features a blinking red/green status indicator (ooo fancy) Updates are generated withing the ui.machine itself.
 
 ### Events View:
-This view displays a list of 'events' that are updated dynamically (once per second) from an external source. Purpose is to demonstrate a responsive UI that updates as the data being displayed is updated. Uses the event bus to both receive updates, and to request historical data when the view is mounted.
+This view displays a list of 'events' that are generated dynamically (once per second) from an external source. Purpose is to demonstrate a responsive UI that updates as the data being displayed is updated. Uses the event bus to both receive updates, and to request historical data when the view is mounted.
 
 ### Charts View:
 Uses a 3rd party library (go-chart) to generate graphs showing process cpu usage over time. Data updates are received via EventBus. Historical data is requested from the model (via the EventBus) when the components are mounted.
