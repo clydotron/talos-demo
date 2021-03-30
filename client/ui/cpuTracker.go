@@ -1,8 +1,8 @@
 package ui
 
 import (
+	"bufio"
 	"bytes"
-	"encoding/base64"
 	"fmt"
 	"log"
 
@@ -22,9 +22,10 @@ type CpuTracker struct {
 	sub *utils.EventBusSubscriber
 
 	history     []float64
-	encChart    string
 	FillColor   string
 	StrokeColor string
+
+	svgChart *bytes.Buffer
 }
 
 func NewCpuTracker(id string, eb *utils.EventBus) *CpuTracker {
@@ -36,6 +37,7 @@ func NewCpuTracker(id string, eb *utils.EventBus) *CpuTracker {
 	tt.FillColor = "00dd00"
 	tt.StrokeColor = "33ff88"
 
+	fmt.Println("creating:", id)
 	return tt
 }
 
@@ -107,12 +109,13 @@ func (c *CpuTracker) updateChart() {
 		},
 	}
 
-	buffer := bytes.NewBuffer([]byte{})
-	graph.Render(chart.PNG, buffer)
-	enc := base64.StdEncoding.EncodeToString(buffer.Bytes())
+	buffer2 := bytes.NewBuffer([]byte{})
+	svgWriter := bufio.NewWriter(buffer2)
+	graph.Render(chart.SVG, svgWriter)
 
 	app.Dispatch(func() {
-		c.encChart = enc
+		//c.encChart = enc
+		c.svgChart = buffer2
 		c.Update()
 	})
 }
@@ -143,18 +146,19 @@ func (c *CpuTracker) OnDismount() {
 
 func (c *CpuTracker) Render() app.UI {
 	h := ""
-	if c.encChart == "" {
+	if c.svgChart == nil || c.svgChart.Len() == 0 {
+		//if c.encChart == "" {
 		h = " hidden"
 		//return nil
 	}
 
-	enc := "data:image/png;base64, " + c.encChart
+	//enc := "data:image/png;base64, " + c.encChart
 
 	return app.Div().
 		Class("w-screen p-2"+h).
 		Body(
 			app.Text(fmt.Sprintln("CPU usage:", c.id)),
-			app.Img().Src(enc).Alt("cpu"),
+			app.Raw(c.svgChart.String()),
 		)
 
 }
