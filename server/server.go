@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -63,8 +64,11 @@ func (cs *clusterServer) HealthCheck(req *cluster.HealthCheckRequest, stream clu
 }
 
 func main() {
+	// command line:
+	var port = flag.String("port", "0.0.0.0:50051", "gRPC server")
+	flag.Parse()
 
-	lis, err := net.Listen("tcp", "0.0.0.0:50051")
+	lis, err := net.Listen("tcp", *port)
 	if err != nil {
 		log.Fatalln("Failed to listen:", err)
 	}
@@ -78,4 +82,12 @@ func main() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalln("Failed to serve:", err)
 	}
+
+	fmt.Println("all done...?")
+	// improve this:
+	// add
+
+	//interrupt := make(chan os.Signal, 1)
+	//signal.Notify(interrupt, os.Interrupt)
+
 }

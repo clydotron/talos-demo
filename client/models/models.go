@@ -41,7 +41,6 @@ func (ti *TaskInfo) RemoveObserver(o Observer) {
 }
 
 func (ti *TaskInfo) NotifyAll() {
-	//fmt.Println("NotifyAll")
 	for _, o := range ti.observers {
 		o.Updated(ti)
 	}
@@ -66,7 +65,6 @@ type MachineInfoRequest struct {
 	Callback func(mi []MachineInfo)
 }
 
-// Events ...
 type EventInfo struct {
 	Name      string
 	ID        string
@@ -106,4 +104,9 @@ type ProcessInfoCpuHistoryRequest struct {
 	ID       string
 	Num      int
 	Callback func(history []float64)
+}
+
+type TestWebsocketEvent struct {
+	TS      time.Time
+	Payload string
 }

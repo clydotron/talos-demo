@@ -15,4 +15,5 @@ require (
 	google.golang.org/genproto v0.0.0-20210325224202-eed09b1b5210 // indirect
 	google.golang.org/grpc v1.36.1
 	google.golang.org/protobuf v1.26.0
+	nhooyr.io/websocket v1.8.6
 )

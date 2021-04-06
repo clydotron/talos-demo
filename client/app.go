@@ -7,10 +7,13 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/clydotron/talos-demo/client/models"
 	"github.com/clydotron/talos-demo/client/ui"
 	"github.com/clydotron/talos-demo/client/utils"
 	"github.com/clydotron/talos-demo/client/views"
+	"github.com/clydotron/talos-demo/client/ws"
 	"github.com/maxence-charriere/go-app/v7/pkg/app"
 )
 
@@ -37,6 +40,10 @@ func main() {
 	miSource.Start()
 	defer miSource.Stop()
 
+	tcx := ws.TestClientX{}
+	tcx.Open("ws://localhost:8000/echo")
+	defer tcx.Close()
+
 	app.Route("/", &ui.UpdateButton{})
 	app.Route("/clusters", views.NewClustersView(eventBus))
 	app.Route("/machines", views.NewMachinesView(eventBus))
@@ -45,4 +52,6 @@ func main() {
 	app.RouteWithRegexp("^/task.*", ui.NewTaskDetail(taskRepo))
 
 	app.Run() // Launches the PWA.
+
+	fmt.Println("DONE")
 }
